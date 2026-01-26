@@ -55,39 +55,58 @@ func (c *Client) logDebug(format string, args ...interface{}) {
 	c.logger.Debugf(format, args...)
 }
 
-// GetWorkflows fetches workflows from the n8n API
+// GetWorkflows fetches all workflows from the n8n API, handling pagination automatically
 func (c *Client) GetWorkflows() (*WorkflowList, error) {
-	url := fmt.Sprintf("%s/workflows", c.baseURL)
+	var allWorkflows []Workflow
+	var cursor string
+	limit := 100 // Set a reasonable page size
 
-	req, err := http.NewRequest(http.MethodGet, url, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	req.Header.Set("X-N8N-API-KEY", c.apiToken)
-	req.Header.Set("Content-Type", "application/json")
-
-	resp, err := c.client.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer func() {
-		if err := resp.Body.Close(); err != nil {
-			c.logger.Warnf("Error closing response body: %v", err)
+	for {
+		url := fmt.Sprintf("%s/workflows", c.baseURL)
+		req, err := http.NewRequest(http.MethodGet, url, nil)
+		if err != nil {
+			return nil, err
 		}
-	}()
 
-	if resp.StatusCode != http.StatusOK {
-		body, _ := io.ReadAll(resp.Body)
-		return nil, fmt.Errorf("API returned error %d: %s", resp.StatusCode, body)
+		q := req.URL.Query()
+		q.Add("limit", strconv.Itoa(limit))
+		if cursor != "" {
+			q.Add("cursor", cursor)
+		}
+		req.URL.RawQuery = q.Encode()
+
+		req.Header.Set("X-N8N-API-KEY", c.apiToken)
+		req.Header.Set("Content-Type", "application/json")
+
+		resp, err := c.client.Do(req)
+		if err != nil {
+			return nil, err
+		}
+
+		if resp.StatusCode != http.StatusOK {
+			body, _ := io.ReadAll(resp.Body)
+			resp.Body.Close()
+			return nil, fmt.Errorf("API returned error %d: %s", resp.StatusCode, body)
+		}
+
+		var result WorkflowList
+		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+			resp.Body.Close()
+			return nil, err
+		}
+		resp.Body.Close()
+
+		if result.Data != nil {
+			allWorkflows = append(allWorkflows, *result.Data...)
+		}
+
+		if result.NextCursor == nil || *result.NextCursor == "" {
+			break
+		}
+		cursor = *result.NextCursor
 	}
 
-	var result WorkflowList
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return nil, err
-	}
-
-	return &result, nil
+	return &WorkflowList{Data: &allWorkflows}, nil
 }
 
 // ActivateWorkflow activates a workflow by ID
