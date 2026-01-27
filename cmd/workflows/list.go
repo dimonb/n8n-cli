@@ -57,7 +57,7 @@ var ListCmd = &cobra.Command{
 
 func init() {
 	ListCmd.Flags().StringVarP(&outputFormat, "output", "o", formatTable, "Output format: table, json, or yaml")
-	ListCmd.Flags().IntP("limit", "l", 0, "Maximum number of workflows to return (default: single page)")
+	ListCmd.Flags().IntP("page-limit", "l", 0, "Page size for API request (default: 100, max: 250)")
 	rootcmd.GetWorkflowsCmd().AddCommand(ListCmd)
 }
 
@@ -124,12 +124,12 @@ func listWorkflows(cmd *cobra.Command, args []string) error {
 
 	client := n8n.NewClient(instanceURL, apiKey)
 
-	var limit *int
-	if limitVal, _ := cmd.Flags().GetInt("limit"); limitVal > 0 {
-		limit = &limitVal
+	var pageLimit *int
+	if pageLimitVal, _ := cmd.Flags().GetInt("page-limit"); pageLimitVal > 0 {
+		pageLimit = &pageLimitVal
 	}
 
-	workflowList, err := client.GetWorkflows(limit)
+	workflowList, err := client.GetWorkflows(pageLimit)
 	if err != nil {
 		return err
 	}

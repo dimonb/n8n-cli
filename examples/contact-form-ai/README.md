@@ -381,6 +381,10 @@ task refresh-all    # Download all workflows
 # Monitoring
 task list           # List workflows with status
 task executions     # View execution history
+
+# Set page size for API request
+n8n workflows list --page-limit 50   # Use page size of 50
+n8n workflows list -l 25             # Short form
 ```
 
 ### Development Tools
