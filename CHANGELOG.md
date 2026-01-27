@@ -2,6 +2,29 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.7.0](https://github.com/edenreich/n8n-cli/compare/v0.6.0...v0.7.0) (2026-01-27)
+
+### ✨ Features
+
+* Add pagination support to GetWorkflows method ([#34](https://github.com/edenreich/n8n-cli/issues/34)) ([971a0ab](https://github.com/edenreich/n8n-cli/commit/971a0abcde09dc4a5aad2b0968ec3023f44a996c))
+
+### 👷 CI
+
+* Bump actions and versions ([c0bf7ba](https://github.com/edenreich/n8n-cli/commit/c0bf7bab94c7cee267bcc3bd9a18b328755361f4))
+* **claude:** Ensure go, nodejs and spectral are installed ([3705822](https://github.com/edenreich/n8n-cli/commit/3705822d1df02717e6eb9e2aa0e3ef7dc9e8752d))
+* **deps:** Update deps ([93ad3b6](https://github.com/edenreich/n8n-cli/commit/93ad3b6d3a1bc642aacedf05524f806cd936683d))
+* **fix:** Use the latest claude code action branch ([298a1be](https://github.com/edenreich/n8n-cli/commit/298a1beedb14b3f4fe9982e14be46f6be51ffc80))
+
+### 📚 Documentation
+
+* Remove hardcoded date for copilot workflows ([9e5b180](https://github.com/edenreich/n8n-cli/commit/9e5b1806090a3c9335cc333a73b6fb4ba1e574bd))
+
+### 🔧 Miscellaneous
+
+* **deps:** Bump cobra cli version ([e462517](https://github.com/edenreich/n8n-cli/commit/e46251742051d8b62b3ad82222e00a4e42a945b7))
+* **deps:** Update dependecies ([1a71f8c](https://github.com/edenreich/n8n-cli/commit/1a71f8cef256cba6d34221fb092322103838b4ec))
+* **deps:** Update package versions in manifest.lock and manifest.toml ([981cbef](https://github.com/edenreich/n8n-cli/commit/981cbefb39902a1005c4349c8450a4bd48ef9b35))
+
 ## [0.6.0](https://github.com/edenreich/n8n-cli/compare/v0.5.2...v0.6.0) (2025-09-21)
 
 ### ✨ Features
