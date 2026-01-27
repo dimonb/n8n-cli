@@ -14,8 +14,8 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// MaxPageLimit is the maximum page size for n8n API requests (per n8n docs)
-const MaxPageLimit = 250
+// MaxLimit is the maximum number of workflows that can be fetched per request (per n8n docs)
+const MaxLimit = 250
 
 // Client is a simple client for interacting with n8n API
 type Client struct {
@@ -59,17 +59,17 @@ func (c *Client) logDebug(format string, args ...interface{}) {
 }
 
 // GetWorkflows fetches workflows from the n8n API
-// If pageLimit is nil, uses the API's default page size
-// If pageLimit is provided, uses that as the page size (max MaxPageLimit)
-func (c *Client) GetWorkflows(pageLimit *int) (*WorkflowList, error) {
+// If limit is nil, uses the API's default (100)
+// If limit is provided, returns up to that many workflows (max MaxLimit)
+func (c *Client) GetWorkflows(limit *int) (*WorkflowList, error) {
 	url := fmt.Sprintf("%s/workflows", c.baseURL)
 	req, err := http.NewRequest(http.MethodGet, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	if pageLimit != nil {
-		requestLimit := min(*pageLimit, MaxPageLimit)
+	if limit != nil {
+		requestLimit := min(*limit, MaxLimit)
 		q := req.URL.Query()
 		q.Add("limit", strconv.Itoa(requestLimit))
 		req.URL.RawQuery = q.Encode()

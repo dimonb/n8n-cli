@@ -23,12 +23,12 @@ func TestListWorkflowsCommand(t *testing.T) {
 		cmd := &cobra.Command{
 			Use: "list",
 			RunE: func(cmd *cobra.Command, args []string) error {
-				var pageLimit *int
-				if pageLimitVal, _ := cmd.Flags().GetInt("page-limit"); pageLimitVal > 0 {
-					pageLimit = &pageLimitVal
+				var limit *int
+				if limitVal, _ := cmd.Flags().GetInt("limit"); limitVal > 0 {
+					limit = &limitVal
 				}
 
-				workflowList, err := fakeClient.GetWorkflows(pageLimit)
+				workflowList, err := fakeClient.GetWorkflows(limit)
 				if err != nil {
 					return err
 				}
@@ -48,7 +48,7 @@ func TestListWorkflowsCommand(t *testing.T) {
 		cmd.SetOut(&stdout)
 		cmd.SetErr(&stderr)
 		cmd.Flags().StringP("output", "o", "table", "Output format")
-		cmd.Flags().IntP("page-limit", "l", 0, "Page size for API request (default: 100, max: 250)")
+		cmd.Flags().IntP("limit", "l", 0, "Maximum number of workflows to return (default: 100, max: 250)")
 
 		stdout.Reset()
 		stderr.Reset()
@@ -71,7 +71,7 @@ func TestListWorkflowsCommand(t *testing.T) {
 		return &n8n.WorkflowList{Data: &workflows}
 	}
 
-	t.Run("calls GetWorkflows with nil when no page-limit specified", func(t *testing.T) {
+	t.Run("calls GetWorkflows with nil when no limit specified", func(t *testing.T) {
 		cmd := setupTestCommand()
 		fakeClient.GetWorkflowsReturns(createSampleWorkflowList(3), nil)
 
@@ -79,23 +79,23 @@ func TestListWorkflowsCommand(t *testing.T) {
 
 		assert.NoError(t, err)
 		assert.Equal(t, 1, fakeClient.GetWorkflowsCallCount())
-		pageLimit := fakeClient.GetWorkflowsArgsForCall(0)
-		assert.Nil(t, pageLimit, "Expected pageLimit to be nil when not specified")
+		limit := fakeClient.GetWorkflowsArgsForCall(0)
+		assert.Nil(t, limit, "Expected limit to be nil when not specified")
 	})
 
-	t.Run("calls GetWorkflows with pageLimit when --page-limit is specified", func(t *testing.T) {
+	t.Run("calls GetWorkflows with limit when --limit is specified", func(t *testing.T) {
 		cmd := setupTestCommand()
 		fakeClient.GetWorkflowsReturns(createSampleWorkflowList(5), nil)
 
-		err := cmd.Flags().Set("page-limit", "5")
+		err := cmd.Flags().Set("limit", "5")
 		assert.NoError(t, err)
 
 		err = cmd.Execute()
 
 		assert.NoError(t, err)
-		pageLimit := fakeClient.GetWorkflowsArgsForCall(fakeClient.GetWorkflowsCallCount() - 1)
-		assert.NotNil(t, pageLimit, "Expected pageLimit to be set")
-		assert.Equal(t, 5, *pageLimit)
+		limit := fakeClient.GetWorkflowsArgsForCall(fakeClient.GetWorkflowsCallCount() - 1)
+		assert.NotNil(t, limit, "Expected limit to be set")
+		assert.Equal(t, 5, *limit)
 	})
 
 	t.Run("returns error when client fails", func(t *testing.T) {
@@ -119,7 +119,7 @@ func TestListWorkflowsCommand(t *testing.T) {
 		assert.Contains(t, stdout.String(), "No workflows found")
 	})
 
-	t.Run("MaxPageLimit constant matches n8n API max of 250", func(t *testing.T) {
-		assert.Equal(t, 250, n8n.MaxPageLimit, "MaxPageLimit should be 250 per n8n API docs")
+	t.Run("MaxLimit constant matches n8n API max of 250", func(t *testing.T) {
+		assert.Equal(t, 250, n8n.MaxLimit, "MaxLimit should be 250 per n8n API docs")
 	})
 }

@@ -325,8 +325,8 @@ func ExtractWorkflowIDFromFile(filePath string) (string, error) {
 
 // PruneWorkflows removes workflows from n8n that are not in the local workflow files
 func PruneWorkflows(client n8n.ClientInterface, cmd *cobra.Command, localWorkflowIDs map[string]bool) error {
-	pageLimit := n8n.MaxPageLimit
-	workflowList, err := client.GetWorkflows(&pageLimit)
+	limit := n8n.MaxLimit
+	workflowList, err := client.GetWorkflows(&limit)
 	if err != nil {
 		return fmt.Errorf("error getting workflows from n8n: %w", err)
 	}

@@ -382,9 +382,9 @@ task refresh-all    # Download all workflows
 task list           # List workflows with status
 task executions     # View execution history
 
-# Set page size for API request
-n8n workflows list --page-limit 50   # Use page size of 50
-n8n workflows list -l 25             # Short form
+# Set limit for workflows returned
+n8n workflows list --limit 50   # Return up to 50 workflows
+n8n workflows list -l 25        # Short form
 ```
 
 ### Development Tools

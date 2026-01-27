@@ -341,19 +341,19 @@ task help        # Show all available commands
 | `task list` | List all workflows | Check deployment status |
 | `task executions` | View execution history | Debug past workflow runs |
 
-**Page Size:**
+**Limit:**
 
-You can control the API page size when listing workflows:
+You can control the number of workflows returned when listing:
 
 ```bash
-# Set page size to 50
-n8n workflows list --page-limit 50
+# Limit to 50 workflows
+n8n workflows list --limit 50
 
 # Short form
 n8n workflows list -l 25
 ```
 
-Without `--page-limit`, the API's default page size of 100 is used (max: 250).
+Without `--limit`, the API's default of 100 is used (max: 250).
 
 ### Development Tools
 

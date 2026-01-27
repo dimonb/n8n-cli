@@ -6,9 +6,9 @@ package n8n
 //go:generate go tool counterfeiter -o clientfakes/fake_client.go . ClientInterface
 type ClientInterface interface {
 	// GetWorkflows fetches workflows from the n8n API
-	// If pageLimit is nil, uses the API's default page size
-	// If pageLimit is provided, uses that as the page size (max 100)
-	GetWorkflows(pageLimit *int) (*WorkflowList, error)
+	// If limit is nil, uses the API's default (100)
+	// If limit is provided, returns up to that many workflows (max 250)
+	GetWorkflows(limit *int) (*WorkflowList, error)
 	// GetWorkflow fetches a single workflow by its ID
 	GetWorkflow(id string) (*Workflow, error)
 	// ActivateWorkflow activates a workflow by its ID
