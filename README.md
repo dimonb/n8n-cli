@@ -126,6 +126,7 @@ Options:
   - `table`: Human-readable tabular format
   - `json`: JSON format for programmatic use
   - `yaml`: YAML format for configuration files
+- `--limit, -l`: Maximum number of workflows to return (default: 100, max: 250)
 
 Examples:
 
@@ -138,6 +139,9 @@ n8n workflows list --output json
 
 # List workflows in YAML format
 n8n workflows list --output yaml
+
+# List workflows with custom limit
+n8n workflows list --limit 50
 ```
 
 #### Refresh

@@ -381,6 +381,10 @@ task refresh-all    # Download all workflows
 # Monitoring
 task list           # List workflows with status
 task executions     # View execution history
+
+# Set limit for workflows returned
+n8n workflows list --limit 50   # Return up to 50 workflows
+n8n workflows list -l 25        # Short form
 ```
 
 ### Development Tools

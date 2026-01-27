@@ -341,6 +341,20 @@ task help        # Show all available commands
 | `task list` | List all workflows | Check deployment status |
 | `task executions` | View execution history | Debug past workflow runs |
 
+**Limit:**
+
+You can control the number of workflows returned when listing:
+
+```bash
+# Limit to 50 workflows
+n8n workflows list --limit 50
+
+# Short form
+n8n workflows list -l 25
+```
+
+Without `--limit`, the API's default of 100 is used (max: 250).
+
 ### Development Tools
 
 | Command | Description |
