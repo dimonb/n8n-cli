@@ -6,11 +6,11 @@ ENV GOPATH=/home/vscode/go \
 RUN mkdir -p /home/vscode/go && chown -R vscode:golang /home/vscode/go
 
 # Tool Versions
-ENV TASK_VERSION=v3.45.4 \
-    GOLANG_CI_LINT_VERSION=v2.4.0 \
+ENV TASK_VERSION=v3.45.5 \
+    GOLANG_CI_LINT_VERSION=v2.8.0 \
     GOLANG_COBRA_CLI_VERSION=v1.10.1 \
-    GITHUB_CLI_VERSION=2.79.0 \
-    SEMANTIC_RELEASE_VERSION=v24.2.9
+    GITHUB_CLI_VERSION=2.86.0 \
+    SEMANTIC_RELEASE_VERSION=v25.0.2
 
 # Install common
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash -
@@ -27,7 +27,7 @@ RUN npm install -g \
     semantic-release@${SEMANTIC_RELEASE_VERSION} \
     @semantic-release/changelog@6.0.3 \
     @semantic-release/git@10.0.1 \
-    @semantic-release/github@11.0.6 \
+    @semantic-release/github@12.0.2 \
     @semantic-release/commit-analyzer@13.0.1 \
     @semantic-release/release-notes-generator@14.1.0 \
     conventional-changelog-conventionalcommits@9.1.0
