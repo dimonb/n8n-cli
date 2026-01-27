@@ -15,29 +15,28 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v5.0.0
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           persist-credentials: false
 
       - name: Setup Node.js
-        uses: actions/setup-node@v5.0.0
+        uses: actions/setup-node@v6.2.0
         with:
           node-version: "lts/*"
 
       - name: Setup Go
         uses: actions/setup-go@v6.0.0
         with:
-          go-version: "1.25"
-          check-latest: true
+          go-version-file: 'go.mod'
 
       - name: Install semantic-release and plugins
         run: |
           npm install -g \
-            semantic-release@24.2.9 \
+            semantic-release@25.0.2 \
             @semantic-release/changelog@6.0.3 \
             @semantic-release/git@10.0.1 \
-            @semantic-release/github@11.0.6 \
+            @semantic-release/github@12.0.2 \
             @semantic-release/commit-analyzer@13.0.1 \
             @semantic-release/release-notes-generator@14.1.0 \
             conventional-changelog-conventionalcommits@9.1.0
