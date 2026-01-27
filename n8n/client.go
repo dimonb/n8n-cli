@@ -85,16 +85,22 @@ func (c *Client) GetWorkflows() (*WorkflowList, error) {
 
 		if resp.StatusCode != http.StatusOK {
 			body, _ := io.ReadAll(resp.Body)
-			resp.Body.Close()
+			if err := resp.Body.Close(); err != nil {
+				c.logger.Warnf("Error closing response body: %v", err)
+			}
 			return nil, fmt.Errorf("API returned error %d: %s", resp.StatusCode, body)
 		}
 
 		var result WorkflowList
 		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-			resp.Body.Close()
+			if closeErr := resp.Body.Close(); closeErr != nil {
+				c.logger.Warnf("Error closing response body: %v", closeErr)
+			}
 			return nil, err
 		}
-		resp.Body.Close()
+		if err := resp.Body.Close(); err != nil {
+			c.logger.Warnf("Error closing response body: %v", err)
+		}
 
 		if result.Data != nil {
 			allWorkflows = append(allWorkflows, *result.Data...)
