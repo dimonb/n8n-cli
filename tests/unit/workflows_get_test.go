@@ -1,4 +1,3 @@
-// Package unit contains unit tests for the n8n-cli
 package unit
 
 import (
@@ -41,7 +40,6 @@ func TestGetWorkflow(t *testing.T) {
 
 			workflow, err := fakeClient.GetWorkflow(tc.workflowID)
 
-			// Check that the correct workflow ID was passed
 			id := fakeClient.GetWorkflowArgsForCall(0)
 			assert.Equal(t, tc.workflowID, id)
 

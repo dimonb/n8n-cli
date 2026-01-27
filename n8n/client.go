@@ -14,6 +14,9 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+// MaxWorkflowsLimit is the maximum number of workflows that can be fetched in a single request
+const MaxWorkflowsLimit = 100
+
 // Client is a simple client for interacting with n8n API
 type Client struct {
 	baseURL  string
@@ -55,64 +58,47 @@ func (c *Client) logDebug(format string, args ...interface{}) {
 	c.logger.Debugf(format, args...)
 }
 
-// GetWorkflows fetches all workflows from the n8n API, handling pagination automatically
-func (c *Client) GetWorkflows() (*WorkflowList, error) {
-	var allWorkflows []Workflow
-	var cursor string
-	limit := 100 // Set a reasonable page size
+// GetWorkflows fetches workflows from the n8n API
+// If limit is nil, fetches a single page using the API's default page size
+// If limit is provided, fetches up to that many workflows (max MaxWorkflowsLimit)
+func (c *Client) GetWorkflows(limit *int) (*WorkflowList, error) {
+	url := fmt.Sprintf("%s/workflows", c.baseURL)
+	req, err := http.NewRequest(http.MethodGet, url, nil)
+	if err != nil {
+		return nil, err
+	}
 
-	for {
-		url := fmt.Sprintf("%s/workflows", c.baseURL)
-		req, err := http.NewRequest(http.MethodGet, url, nil)
-		if err != nil {
-			return nil, err
-		}
-
+	if limit != nil {
+		requestLimit := min(*limit, MaxWorkflowsLimit)
 		q := req.URL.Query()
-		q.Add("limit", strconv.Itoa(limit))
-		if cursor != "" {
-			q.Add("cursor", cursor)
-		}
+		q.Add("limit", strconv.Itoa(requestLimit))
 		req.URL.RawQuery = q.Encode()
+	}
 
-		req.Header.Set("X-N8N-API-KEY", c.apiToken)
-		req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-N8N-API-KEY", c.apiToken)
+	req.Header.Set("Content-Type", "application/json")
 
-		resp, err := c.client.Do(req)
-		if err != nil {
-			return nil, err
-		}
-
-		if resp.StatusCode != http.StatusOK {
-			body, _ := io.ReadAll(resp.Body)
-			if err := resp.Body.Close(); err != nil {
-				c.logger.Warnf("Error closing response body: %v", err)
-			}
-			return nil, fmt.Errorf("API returned error %d: %s", resp.StatusCode, body)
-		}
-
-		var result WorkflowList
-		if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-			if closeErr := resp.Body.Close(); closeErr != nil {
-				c.logger.Warnf("Error closing response body: %v", closeErr)
-			}
-			return nil, err
-		}
+	resp, err := c.client.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
 		if err := resp.Body.Close(); err != nil {
 			c.logger.Warnf("Error closing response body: %v", err)
 		}
+	}()
 
-		if result.Data != nil {
-			allWorkflows = append(allWorkflows, *result.Data...)
-		}
-
-		if result.NextCursor == nil || *result.NextCursor == "" {
-			break
-		}
-		cursor = *result.NextCursor
+	if resp.StatusCode != http.StatusOK {
+		body, _ := io.ReadAll(resp.Body)
+		return nil, fmt.Errorf("API returned error %d: %s", resp.StatusCode, body)
 	}
 
-	return &WorkflowList{Data: &allWorkflows}, nil
+	var result WorkflowList
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		return nil, err
+	}
+
+	return &result, nil
 }
 
 // ActivateWorkflow activates a workflow by ID
