@@ -8,7 +8,7 @@ RUN mkdir -p /home/vscode/go && chown -R vscode:golang /home/vscode/go
 # Tool Versions
 ENV TASK_VERSION=v3.45.5 \
     GOLANG_CI_LINT_VERSION=v2.8.0 \
-    GOLANG_COBRA_CLI_VERSION=v1.10.1 \
+    GOLANG_COBRA_CLI_VERSION=v1.3.0 \
     GITHUB_CLI_VERSION=2.86.0 \
     SEMANTIC_RELEASE_VERSION=v25.0.2
 
